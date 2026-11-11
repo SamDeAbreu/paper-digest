@@ -1,0 +1,70 @@
+name: Daily paper digest
+
+on:
+  schedule:
+    # GitHub cron is UTC and can't follow daylight saving, so run at both
+    # 12:50 and 13:50 UTC. The script itself only sends once per day, after
+    # `send_after` (08:45) New York time, so the email arrives ~9 AM all year.
+    - cron: "50 12 * * *"
+    - cron: "50 13 * * *"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Send now, even if today's digest already went out"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write          # to commit state/state.json (which papers were already sent)
+
+concurrency:
+  group: daily-digest
+  cancel-in-progress: false
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Unit tests
+        run: python -m unittest discover -s tests -t .
+
+      - name: Build and send digest
+        env:
+          GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          DIGEST_RECIPIENT: ${{ secrets.DIGEST_RECIPIENT }}
+          CONTACT_EMAIL: ${{ secrets.CONTACT_EMAIL }}         # optional
+          OPENALEX_API_KEY: ${{ secrets.OPENALEX_API_KEY }}   # optional
+          S2_API_KEY: ${{ secrets.S2_API_KEY }}               # optional
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.force }}" = "true" ]; then
+            python -m digest --force
+          else
+            python -m digest
+          fi
+
+      - name: Save state
+        run: |
+          if [ -n "$(git status --porcelain state/)" ]; then
+            git config user.name  "paper-digest-bot"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add state/
+            git commit -m "Update digest state $(date -u +%F)"
+            git push
+          fi
+
+      - name: Keep a copy of the email
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: digest-${{ github.run_id }}
+          path: out/
+          retention-days: 14
+          if-no-files-found: ignore

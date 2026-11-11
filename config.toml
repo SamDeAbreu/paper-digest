@@ -1,0 +1,219 @@
+# ─────────────────────────────────────────────────────────────────────────────
+#  Daily paper digest: configuration
+#  Edit this file on GitHub to change topics, authors or journals; the next
+#  morning's email picks up the change automatically.
+# ─────────────────────────────────────────────────────────────────────────────
+
+[digest]
+title            = "Daily Paper Digest"
+timezone         = "America/New_York"
+send_after       = "08:45"   # local time; the scheduled run won't send before this
+lookback_days    = 7         # how far back each run looks for newly registered papers
+abstract_wait_days = 2       # how long to wait for a missing abstract before judging on title alone
+min_abstract_hits = 2        # a theme matches if a keyword is in the TITLE, or its keywords occur
+                             # this many times in the ABSTRACT (1 = any passing mention counts)
+send_when_empty  = true      # send a short "nothing new today" email
+max_authors_shown = 8        # longer author lists are shortened (followed authors always shown)
+
+# ── Keyword syntax ───────────────────────────────────────────────────────────
+#  * matching is case-insensitive and ignores accents (Bénard == Benard)
+#  * a hyphen or a space matches either: "sea ice" also matches "sea-ice"
+#  * a trailing * matches any word ending: "turbulen*" -> turbulence, turbulent
+#  * prefix "re:" for a raw regular expression
+#  Keywords are matched against the title and abstract.
+#  A paper is listed once, under the matching theme with the lowest `priority`
+#  number; any other matching themes are shown as tags on the paper.
+
+[[themes]]
+name = "Internal waves"
+color = "#2563eb"
+priority = 5
+keywords = [
+  "internal wave*", "internal tid*", "internal gravity wave*", "internal solitary wave*",
+  "internal bore*", "inertia-gravity wave*", "near-inertial", "inertial oscillation*",
+  "lee wave*", "baroclinic tid*", "Garrett-Munk", "wave-induced mixing",
+]
+
+[[themes]]
+name = "Turbulence"
+color = "#7c3aed"
+priority = 8
+keywords = [
+  "turbulen*", "diapycnal", "microstructure", "dissipation rate*", "Kelvin-Helmholtz",
+  "shear instabilit*", "double-diffus*", "salt finger*", "Kolmogorov", "energy cascade*",
+  "eddy diffusivit*", "mixing efficiency",
+]
+
+[[themes]]
+name = "Mixed-layer deepening"
+color = "#0891b2"
+priority = 4
+keywords = [
+  "mixed layer*", "surface boundary layer*", "ocean boundary layer*", "upper ocean mixing",
+  "boundary layer deepening", "entrainment", "Langmuir", "wind-driven mixing", "thermocline erosion",
+]
+
+[[themes]]
+name = "Ice–ocean interactions"
+color = "#0d9488"
+priority = 3
+keywords = [
+  "ice-ocean", "ocean-ice", "ice-water interface", "ice shel*", "basal melt*", "ice melt*",
+  "melting ice", "melt rate*", "ice face*", "iceberg*", "glacial fjord*", "tidewater glacier*",
+  "meltwater", "frazil", "Stefan problem", "solidification",
+]
+
+[[themes]]
+name = "Convection"
+color = "#ea580c"
+priority = 7
+keywords = [
+  "convect*", "Rayleigh-Benard", "Rayleigh number*", "Nusselt", "plume*", "buoyancy-driven",
+]
+
+[[themes]]
+name = "Rotating convection"
+color = "#dc2626"
+priority = 1
+keywords = [
+  "rotating convection", "rotating Rayleigh-Benard", "convective Taylor column*", "rotating plume*",
+  "geostrophic convection",
+  're:\brotat\w*\b.{0,60}\bconvect|\bconvect\w*\b.{0,60}\brotat',
+]
+
+[[themes]]
+name = "Arctic sea ice"
+color = "#0369a1"
+priority = 6
+keywords = [
+  "sea ice", "Arctic Ocean", "Arctic sea*", "Arctic halocline", "Arctic amplification",
+  "Beaufort Gyre", "Beaufort Sea", "Canada Basin", "Eurasian Basin", "Nansen Basin", "Amundsen Basin",
+  "Makarov Basin", "Fram Strait", "Chukchi", "Barents Sea", "Lincoln Sea", "marginal ice zone*",
+  "ice floe*", "pack ice", "landfast ice", "polynya*", "ice-tethered profiler*", "Atlantic Water",
+]
+
+[[themes]]
+name = "Ekman"
+color = "#65a30d"
+priority = 2
+keywords = ["Ekman*"]
+
+# ── Followed authors ─────────────────────────────────────────────────────────
+#  Every new paper by these people is included, whatever its topic.
+#  `orcid` tells apart people who share a name. With an ORCID, a paper outside
+#  the watch list is only counted if the publisher recorded that ORCID.
+#  `given` lists accepted first names; initials ("J. S.") also match unless
+#  allow_initials = false. `exclude` lists full names that should never match.
+
+[[authors]]
+name = "Sam De Abreu"
+given = ["Sam", "Samuel"]
+family = "De Abreu"
+
+[[authors]]
+name = "Mary-Louise Timmermans"
+family = "Timmermans"
+orcid = "0000-0003-2718-2556"
+
+[[authors]]
+name = "John Wettlaufer"
+family = "Wettlaufer"
+orcid = "0000-0002-1676-9645"
+
+[[authors]]
+name = "Samuel Brenner"
+given = ["Samuel", "Sam"]
+family = "Brenner"
+orcid = "0000-0002-0826-1294"
+allow_initials = false
+
+[[authors]]
+name = "Erica Rosenblum"
+family = "Rosenblum"
+orcid = "0000-0002-9330-2010"
+exclude = ["Erica Bree Rosenblum"]
+
+[[authors]]
+name = "Nicolas Grisouard"
+family = "Grisouard"
+orcid = "0000-0003-4045-2143"
+
+[[authors]]
+name = "John Arnou"
+family = "Arnou"
+
+# ── Sources ──────────────────────────────────────────────────────────────────
+
+[arxiv]
+categories = ["physics.ao-ph", "physics.flu-dyn", "nlin.CD"]
+
+# Journals are read from Crossref by ISSN. Find a journal's ISSN on its website
+# or at https://portal.issn.org and add a block to follow it.
+
+[[journals]]
+name = "Journal of Physical Oceanography"
+issn = ["0022-3670", "1520-0485"]
+
+[[journals]]
+name = "JGR: Oceans"
+issn = ["2169-9275", "2169-9291"]
+
+[[journals]]
+name = "Geophysical Research Letters"
+issn = ["0094-8276", "1944-8007"]
+
+[[journals]]
+name = "Ocean Modelling"
+issn = ["1463-5003", "1463-5011"]
+
+[[journals]]
+name = "Progress in Oceanography"
+issn = ["0079-6611", "1873-4472"]
+
+[[journals]]
+name = "Journal of Fluid Mechanics"
+issn = ["0022-1120", "1469-7645"]
+
+[[journals]]
+name = "Physical Review Fluids"
+issn = ["2469-990X"]
+
+[[journals]]
+name = "Physics of Fluids"
+issn = ["1070-6631", "1089-7666"]
+
+[[journals]]
+name = "Annual Review of Fluid Mechanics"
+issn = ["0066-4189", "1545-4479"]
+
+[[journals]]
+name = "JGR: Atmospheres"
+issn = ["2169-897X", "2169-8996"]
+
+[[journals]]
+name = "Journal of the Atmospheric Sciences"
+issn = ["0022-4928", "1520-0469"]
+
+[[journals]]
+name = "Journal of Climate"
+issn = ["0894-8755", "1520-0442"]
+
+[[journals]]
+name = "Journal of Advances in Modeling Earth Systems"
+issn = ["1942-2466"]
+
+[[journals]]
+name = "Nature"
+issn = ["0028-0836", "1476-4687"]
+
+[[journals]]
+name = "Science"
+issn = ["0036-8075", "1095-9203"]
+
+[[journals]]
+name = "Nature Geoscience"
+issn = ["1752-0894", "1752-0908"]
+
+[[journals]]
+name = "PNAS"
+issn = ["0027-8424", "1091-6490"]
