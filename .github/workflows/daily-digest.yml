@@ -2,11 +2,15 @@ name: Daily paper digest
 
 on:
   schedule:
-    # GitHub cron is UTC and can't follow daylight saving, so run at both
-    # 12:50 and 13:50 UTC. The script itself only sends once per day, after
-    # `send_after` (08:45) New York time, so the email arrives ~9 AM all year.
-    - cron: "50 12 * * *"
-    - cron: "50 13 * * *"
+    # GitHub cron is UTC and can't follow daylight saving, and GitHub sometimes
+    # drops scheduled runs, so several start times are listed. The script sends
+    # only once per day and never before `send_after` (08:45) New York time;
+    # later start times are backups that do nothing if the email already went out.
+    - cron: "50 12 * * *"   # 8:50 AM EDT
+    - cron: "50 13 * * *"   # 8:50 AM EST
+    - cron: "20 14 * * *"   # backup
+    - cron: "50 14 * * *"   # backup
+    - cron: "50 15 * * *"   # backup
   workflow_dispatch:
     inputs:
       force:
