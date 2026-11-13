@@ -49,6 +49,33 @@ Python standard library.
 
 After that it runs every morning at about 9:00 AM New York time.
 
+### Reliable morning trigger (recommended)
+
+GitHub's built-in schedule is best-effort: runs are often hours late or skipped.
+A free external timer that starts the workflow through GitHub's API is far more
+dependable. The built-in schedule stays on as a backup, and the script never
+sends more than once a day.
+
+1. **Create a token.** Go to <https://github.com/settings/personal-access-tokens/new>
+   → *Fine-grained token*. Under *Repository access*, choose *Only select
+   repositories* → this repo. Under *Permissions → Repository → Actions*, choose
+   **Read and write**. Copy the token.
+2. **Create a timer.** Make a free account at <https://cron-job.org> and add a
+   cron job:
+   * **URL:** `https://api.github.com/repos/OWNER/REPO/actions/workflows/daily-digest.yml/dispatches`
+   * **Schedule:** every day at 08:50, time zone *America/New_York*
+   * **Advanced → Request method:** `POST`
+   * **Advanced → Headers:**
+     * `Accept: application/vnd.github+json`
+     * `Authorization: Bearer YOUR_TOKEN`
+     * `X-GitHub-Api-Version: 2022-11-28`
+   * **Advanced → Request body:** `{"ref":"main","inputs":{"force":"false"}}`
+3. **Test it** with *Test run*. A response of `204` means the workflow
+   started; you'll see it on the repo's *Actions* tab.
+
+Fine-grained tokens expire. Pick the longest expiry offered and set a reminder
+to create a new one then.
+
 ## Changing what you get
 
 Everything is in [`config.toml`](config.toml). You can edit it right on GitHub.
